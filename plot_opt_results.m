@@ -6,10 +6,19 @@ hold off;
 legend('max fit', 'min fit');
 xlabel('generation');
 
-n = length(max_fits);
+% threshold based on increase..
+divisions = 20;
+thresholds = linspace(min(max_fits), max(max_fits), divisions);
+
 f = figure();
-for i=1:n
-    L = L_best(i,:);
+for d=1:divisions
+    t = thresholds(d);
+    i = find(max_fits > t, 1);
+    if isempty(i)
+        L = L_best(end,:);
+    else   
+        L = L_best(i,:);
+    end
     [v, tr] = simulate_rotation(L);
     clf;
     plot_linkage(tr, true, f);
@@ -21,7 +30,10 @@ for i=1:n
     d = extract_pt_from_tr(tr, 7);
     plot(d(1,:), d(2,:), 'Color', [0.7 0.1 0.7]);
     hold off;
-    title(['best in generation ' num2str(i)]);
+    title(['best in generation ' num2str(i) ': ' num2str(max_fits(i))]);
     drawnow;
     pause;
+    if isempty(i)
+        break;
+    end
 end

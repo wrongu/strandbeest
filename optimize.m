@@ -27,7 +27,7 @@ end
 
 L(end,:) = linkage0;
 
-t_per_g = .5;
+t_per_g = .7;
 
 f = figure();
 for g=1:G
@@ -121,16 +121,19 @@ for g=1:G
         L(l,:) = linkage;
     end
     te = toc(t0);
-    t_per_g = t_per_g + (te - t_per_g) / 20;
-    n_remain = G - g;
-    t_sec = n_remain * t_per_g;
-    t_min = floor(t_sec / 60);
-    t_sec = floor(t_sec - t_min * 60);
-    fprintf('\t ETR: %d min', t_min);
-    if t_sec > 0
-        fprintf(' %d sec\n', t_sec);
-    else
-        fprintf('\n');
+    
+    if g > 20
+        t_per_g = t_per_g + (te - t_per_g) / 20;
+        n_remain = G - g;
+        t_sec = n_remain * t_per_g;
+        t_min = floor(t_sec / 60);
+        t_sec = floor(t_sec - t_min * 60);
+        fprintf('\t ETR: %d min', t_min);
+        if t_sec > 0
+            fprintf(' %d sec\n', t_sec);
+        else
+            fprintf('\n');
+        end
     end
 end
 
