@@ -137,7 +137,7 @@ for g=1:G
     end
 end
 
-if(savefile ~= '')
+if(~strcmp(savefile,''))
     save(savefile, 'max_fits', 'min_fits', 'L_best');
 else
     plot_opt_results;
