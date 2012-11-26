@@ -9,10 +9,10 @@ function score = score_trajectory(tr, n)
     s_foot = score_foot_trajectory(pts_e);
     score = s_foot;
     
-    % if the heel goes below the foot, penalize
+    % if the heel goes below the foot, penalize heavily
     pts_b = extract_pt_from_tr(tr, 5);
     pts_d = extract_pt_from_tr(tr, 7);
     if (~isempty(find(pts_b(2,:) < pts_e(2,:), 1)) || ~isempty(find(pts_d(2,:) < pts_e(2,:), 1)))
-        score = 0;
+        score = score*0.01;
     end
 end

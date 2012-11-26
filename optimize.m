@@ -4,6 +4,7 @@ N = 100; % num link. per generation
 G = 100; % num generations
 r = .02; % chance of mutation
 C = 15; % number to select each generation for reproduction
+M = 5; % number to mutate _from scratch_ each generation
 n = 128;
 
 L = zeros(N, 13);
@@ -11,7 +12,8 @@ fitness = zeros(N,1);
 
 max_fits = zeros(G,1);
 min_fits = zeros(G,1);
-p_dead = ones(G,1); % percent died
+% p_dead = ones(G,1); % percent died
+L_best = zeros(G,13);
 
 linkage0 = [.5 0 .3 1.5 1.5 1.5 1.5 .5 1.5 1.25 .75 1 1.5];
 
@@ -26,7 +28,7 @@ L(end,:) = linkage0;
 f = figure();
 
 for g=1:G
-    fprintf('generation %d\n', g);
+    fprintf('generation %d', g);
     % simulate and score
 %     m = 0;
 %     mi = 0;
@@ -46,23 +48,26 @@ for g=1:G
     L = L(i,:);
     max_fits(g) = fitness(end);
     min_fits(g) = fitness(1);
+    fprintf('\tbest fitness: %f\n', fitness(end));
     
     % plot best
-    if mi > 0
-        [v, tr] = simulate_rotation(L(end,:), 0, 2*pi, n);
-        clf;
-        plot_linkage(tr, true, f);
-        hold on;
-        ft = extract_pt_from_tr(tr, 8);
-        plot(ft(1,:), ft(2,:), 'Color', [0.8 0 0]);
-        b = extract_pt_from_tr(tr, 5);
-        plot(b(1,:), b(2,:), 'Color', [0.1 0.7 0.7]);
-        d = extract_pt_from_tr(tr, 7);
-        plot(d(1,:), d(2,:), 'Color', [0.7 0.1 0.7]);
-        hold off;
-        drawnow;
-    else
-        fprintf('\tno survivors\n');
+    if exist('mi', 'var')
+        if mi > 0
+            [v, tr] = simulate_rotation(L(end,:), 0, 2*pi, n);
+            clf;
+            plot_linkage(tr, true, f);
+            hold on;
+            ft = extract_pt_from_tr(tr, 8);
+            plot(ft(1,:), ft(2,:), 'Color', [0.8 0 0]);
+            b = extract_pt_from_tr(tr, 5);
+            plot(b(1,:), b(2,:), 'Color', [0.1 0.7 0.7]);
+            d = extract_pt_from_tr(tr, 7);
+            plot(d(1,:), d(2,:), 'Color', [0.7 0.1 0.7]);
+            hold off;
+            drawnow;
+        else
+            fprintf('\tno survivors\n');
+        end
     end
     
     % reproduce with the C best versions
@@ -73,29 +78,34 @@ for g=1:G
     
     % create next generation
     parfor l=C+1:N
-        % weighted select of 2 linkages (could be the same one)
-        thresh1 = rand * max_rand;
-        thresh2 = rand * max_rand;
-        i1 = find(csums > thresh1, 1);
-        i2 = find(csums > thresh2, 1);
-        
-        if isempty(i1)
-            i1 = N;
-        end
-        if isempty(i2)
-            i2 = N;
-        end
-        
-        % weighted selection of them
-        L1 = rand(1,13)*(fitness(i1) + fitness(i2)) < fitness(i1);
-        L2 = ~L1;
-        linkage = zeros(1,13);
-        linkage(L1) = pool(i1,L1);
-        linkage(L2) = pool(i2,L2);
-        
-        for j=1:length(linkage)
-            if rand < r
-                linkage(j) = linkage(j) + rand*.5 - .25;
+        % make M new ones from scratch
+        if l <= M
+            linkage = rand(1,13)+0.5;
+        else
+            % weighted select of 2 linkages (could be the same one)
+            thresh1 = rand * max_rand;
+            thresh2 = rand * max_rand;
+            i1 = find(csums > thresh1, 1);
+            i2 = find(csums > thresh2, 1);
+
+            if isempty(i1)
+                i1 = N;
+            end
+            if isempty(i2)
+                i2 = N;
+            end
+
+            % weighted selection of them
+            L1 = rand(1,13)*(fitness(i1) + fitness(i2)) < fitness(i1);
+            L2 = ~L1;
+            linkage = zeros(1,13);
+            linkage(L1) = pool(i1,L1);
+            linkage(L2) = pool(i2,L2);
+
+            for j=1:length(linkage)
+                if rand < r
+                    linkage(j) = linkage(j) + rand*.5 - .25;
+                end
             end
         end
         linkage = linkage / linkage(3); % normalize to radius of 1
@@ -107,21 +117,8 @@ for g=1:G
     end
 end
 
-if(exists('savefile', 'var'))
-    save(savefile);
+if(exist('savefile', 'var'))
+    save(savefile, 'max_fits', 'min_fits', 'L_best');
+else
+    plot_opt_results;
 end
-
-%%
-figure();
-subplot(1,2,1);
-plot(max_fits);
-hold on;
-plot(min_fits, 'Color', [0.8 0 0]);
-hold off;
-legend('max fit', 'min fit');
-xlabel('generation');
-
-subplot(1,2,2);
-plot(p_dead);
-xlabel('generation');
-ylabel('percent dead');
