@@ -15,6 +15,28 @@ So.. can I at least reproduce his results? Or do better?
 
 Ultimately I want to produce little desktop size strandbeests - maybe 3D print them. Turns out Jansen already did that too. Oh, well..
 
+__Fitness Function__
+
+As mentioned above, the optimization works. That is - scores get better over time. But, that doesn't mean that the machine is ready to walk just because it scored well on my test. I'm not actually simulating any walking.. I basically made up a few criteria that I thought would be good, and used some ideas from Jansen's site (like triangles). So, here's how the score for a given linkage is calculated:
+
+1. Break up the foot's path into two sections at min- and max-x (works since it's always a loop)
+2. score the weight-bearing (lower) section for flatness: `exp(-(average difference from the mean))`
+3. score the recovery (upper) section for height: `1-exp(peak minus average of endpoints)`
+4. multiply together the results from 2. and 3.
+
+with a few caveats from testing:
+
+1. if it would literally wouldn't fit together, or would tear itself apart because the dimensions don't work, score 0
+2. if the foot ever goes above y=0, score it a 0 (it can't stand up at all)
+3. if either endpoint of the foot's recovery path is higher than the middle of that path (i.e. not a triangle), multiply by 0.01 to penalize it
+4. if the foot ever goes above the "heel" joints, multiply by 0.01 to penalize it (foot is not weight-bearing at these points)
+
+Originally I wanted to keep all scores on the range `[0, 1]`, but that's been changed. The actual number is arbitrary as long as the following holds: a linkage with score `x` is _better_ than a linkage with score `y` if and only if `x > y`. 
+
+The reason this is a good idea, as Jansen says on his site, is because the leg will be supporting weight while at the bottom of its motion. The flatter it is, the less weight it's throwing around (imagine balancing a book on your head while walking - you want your head to move as little as possible, so you keep your feet moving as horizontally as possible). So: flat base is good.
+
+Let's say we try to do this with only 2 legs on each side. By the time the second leg is ready to pick its foot up off the ground, the first leg better be ready to catch it, otherwise it will fall flat on its face. So - we want the "recovery" of the motion to be fast compared to the weight-bearing part; hence, the score is multiplied by the ratio of ground-time to recovery-time.
+
 Todo
 ---
 
