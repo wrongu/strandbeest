@@ -28,17 +28,17 @@ f = figure();
 for g=1:G
     fprintf('generation %d\n', g);
     % simulate and score
-    m = 0;
-    mi = 0;
-    for l=1:N
+%     m = 0;
+%     mi = 0;
+    parfor l=1:N
         [v, tr] = simulate_rotation(L(l,:), 0, 2*pi, n);
         fitness(l) = score_trajectory(tr, n);
-        if fitness(l) > m
-            m = fitness(l);
-            mi = l;
-        elseif fitness(l) == 0
-            p_dead(g) = p_dead(g)+1;
-        end
+%         if fitness(l) > m
+%             m = fitness(l);
+%             mi = l;
+%         elseif fitness(l) == 0
+%             p_dead(g) = p_dead(g)+1;
+%         end
     end
     
     % sort by fitness
@@ -72,7 +72,7 @@ for g=1:G
     max_rand = csums(end);
     
     % create next generation
-    for l=C+1:N
+    parfor l=C+1:N
         % weighted select of 2 linkages (could be the same one)
         thresh1 = rand * max_rand;
         thresh2 = rand * max_rand;
