@@ -107,6 +107,10 @@ for g=1:G
     end
 end
 
+if(exists('savefile', 'var'))
+    save(savefile);
+end
+
 %%
 figure();
 subplot(1,2,1);
