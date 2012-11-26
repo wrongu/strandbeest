@@ -1,11 +1,13 @@
 % evolve 'em
 
-N = 100; % num link. per generation
-G = 100; % num generations
+N = 200; % num link. per generation
+G = 1000; % num generations
 r = .02; % chance of mutation
 C = 15; % number to select each generation for reproduction
 M = 5; % number to mutate _from scratch_ each generation
 n = 128;
+
+savefile = input('enter save-file name: ', 's');
 
 L = zeros(N, 13);
 fitness = zeros(N,1);
@@ -25,9 +27,11 @@ end
 
 L(end,:) = linkage0;
 
-f = figure();
+t_per_g = .5;
 
+f = figure();
 for g=1:G
+    t0 = tic;
     fprintf('generation %d', g);
     % simulate and score
 %     m = 0;
@@ -49,6 +53,7 @@ for g=1:G
     max_fits(g) = fitness(end);
     min_fits(g) = fitness(1);
     fprintf('\tbest fitness: %f\n', fitness(end));
+    L_best(g,:) = L(end,:);
     
     % plot best
     if exist('mi', 'var')
@@ -115,9 +120,21 @@ for g=1:G
         % reassign it
         L(l,:) = linkage;
     end
+    te = toc(t0);
+    t_per_g = t_per_g + (te - t_per_g) / 20;
+    n_remain = G - g;
+    t_sec = n_remain * t_per_g;
+    t_min = floor(t_sec / 60);
+    t_sec = floor(t_sec - t_min * 60);
+    fprintf('\t ETR: %d min', t_min);
+    if t_sec > 0
+        fprintf(' %d sec\n', t_sec);
+    else
+        fprintf('\n');
+    end
 end
 
-if(exist('savefile', 'var'))
+if(savefile ~= '')
     save(savefile, 'max_fits', 'min_fits', 'L_best');
 else
     plot_opt_results;
