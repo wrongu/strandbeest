@@ -9,6 +9,11 @@ function M = traj_to_movie(trajectory, frame_limits)
         xmax = max(max(trajectory(:,1,:)));
         ymin = min(min(trajectory(:,2,:)));
         ymax = max(max(trajectory(:,2,:)));
+        if (xmax-xmin) > (ymax-ymin)
+            ymax = ymin + (xmax-xmin);
+        else
+            xmax = xmin + (ymax-ymin);
+        end
         frame_limits = [floor(xmin) ceil(xmax) floor(ymin) ceil(ymax)];
     end
     for i=1:num_frames
