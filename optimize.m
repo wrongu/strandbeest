@@ -12,6 +12,9 @@ seedfile = input('enter seed-file name (starting point): ', 's');
 if exist(seedfile, 'file')
     load(seedfile);
     linkage0 = L_best(end,:);
+elseif exist([seedfile '.mat'], 'file')
+    load(seedfile);
+    linkage0 = L_best(end,:);
 else
     linkage0 = [.5 0 .3 1.5 1.5 1.5 1.5 .5 1.5 1.25 .75 1 1.5];
 end

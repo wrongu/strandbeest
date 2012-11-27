@@ -39,20 +39,31 @@ function [score stresses] = score_stress(tr)
 	n = size(tr, 3);
              
     for r=1:11
+        % extract trajectory for this rod's first endpoint
         a = rod_pairs(r,1);
         A = reshape(tr(a,:,:), 2, n);
         dA = reshape(pt_diffs(a,:,:), 2, n-1);
         
+        % extract trajectory for this rod's second endpoint
         b = rod_pairs(r,2);
         B = reshape(tr(b,:,:), 2, n);
         dB = reshape(pt_diffs(b,:,:), 2, n-1);
         
+        % get the vector describing the rod itself (A-B) over time and
+        %   average it
         rod = A-B;
         rod_avgs = (rod(:,2:end) + rod(:,1:end-1))/2;
         
+        % stress is minimum at 90 degrees and max at 0 or 180 and is also
+        % proportional to the magnitude of the movement and the length of
+        % the lever arm
+        %   dot product express exactly that..
+        % this takes the dot product of the rod's orientation with the
+        %   movement vector of its endpoints, at each pt in time, averaged
         stress_A = sum(abs(dot(dA, rod_avgs))) / (n-1);
         stress_B = sum(abs(dot(dB, rod_avgs))) / (n-1);
         
+        % this is hacky - total stress is just avg of stress at two endpts
         stresses(r) = (stress_A + stress_B) / 2;
     end
     

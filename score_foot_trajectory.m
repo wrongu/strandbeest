@@ -49,7 +49,7 @@ function score = score_foot_trajectory(pts, show)
         fprintf('height_score = %f\n', height_score);
     end
     
-    score = flat_bottom_score * height_score * length(lo)/length(hi);
+    score = flat_bottom_score * height_score * length(lo) / length(hi) / max(abs(diff(hi,2)));
     
     if hi(floor(end/2)) < hi(end) || hi(floor(end/2)) < hi(1)
         score = score*0.1;
