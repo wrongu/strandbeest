@@ -7,7 +7,8 @@ function score = score_trajectory(tr, n)
     end
     pts_e = extract_pt_from_tr(tr, 8);
     s_foot = score_foot_trajectory(pts_e);
-    score = s_foot;
+    s_stress = score_stress(tr);
+    score = s_foot * s_stress;
     
     % if the heel goes below the foot, penalize heavily
     pts_b = extract_pt_from_tr(tr, 5);

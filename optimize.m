@@ -8,8 +8,15 @@ M = 5; % number to mutate _from scratch_ each generation
 n = 128;
 
 savefile = input('enter save-file name: ', 's');
+seedfile = input('enter seed-file name (starting point): ', 's');
+if exist(seedfile, 'file')
+    load(seedfile);
+    linkage0 = L_best(end,:);
+else
+    linkage0 = [.5 0 .3 1.5 1.5 1.5 1.5 .5 1.5 1.25 .75 1 1.5];
+end
 
-L = zeros(N, 13);
+L = repmat(linkage0, N, 1);
 fitness = zeros(N,1);
 
 max_fits = zeros(G,1);
@@ -17,12 +24,14 @@ min_fits = zeros(G,1);
 % p_dead = ones(G,1); % percent died
 L_best = zeros(G,13);
 
-linkage0 = [.5 0 .3 1.5 1.5 1.5 1.5 .5 1.5 1.25 .75 1 1.5];
-
-for l=1:N
-    L(l,:) = rand(1,13) + 0.5; % all positive, from 0.5 to 1.5
+% init by randomly mutating all but one of linkage0
+for l=2:N
+    L(l,:) = L(l,:) + rand(1,13)*0.5-0.25;
+    % rotate so the fixed-point y is at coordinate y=0
+    L(l,1) = norm(L(l,1:2));
     L(l,2) = 0;
-    L(l,:) = L(l,:) / L(l,3); % normalized to a radius of 1
+    % normalize to a radius of 1
+    L(l,:) = L(l,:) / L(l,3); 
 end
 
 L(end,:) = linkage0;
@@ -136,6 +145,8 @@ for g=1:G
         end
     end
 end
+
+beep; beep;
 
 if(~strcmp(savefile,''))
     save(savefile, 'max_fits', 'min_fits', 'L_best');
