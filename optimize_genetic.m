@@ -9,14 +9,26 @@ n = 128;
 
 savefile = input('enter save-file name: ', 's');
 seedfile = input('enter seed-file name (starting point): ', 's');
-if exist(seedfile, 'file')
-    load(seedfile);
-    linkage0 = L_best(end,:);
-elseif exist([seedfile '.mat'], 'file')
+seedfile = ['saves/' seedfile];
+if exist(seedfile, 'file') || exist([seedfile '.mat'], 'file')
     load(seedfile);
     linkage0 = L_best(end,:);
 else
-    linkage0 = [.5 0 .3 1.5 1.5 1.5 1.5 .5 1.5 1.25 .75 1 1.5];
+    % from jansen's website
+    linkage0 = [38, ... % a
+           -7.8, ... % l
+           15, ... % m
+           50, ... % j
+           61.9, ... % k
+           41.5, ... % b
+           55.8, ... % e
+           40.1, ... % d
+           39.3, ... % c
+           39.4, ... % f
+           36.7, ... % g
+           49, ... % i
+           65.7]; % h
+    linkage0 = linkage0 / linkage0(3);
 end
 
 L = repmat(linkage0, N, 1);
@@ -30,9 +42,6 @@ L_best = zeros(G,13);
 % init by randomly mutating all but one of linkage0
 for l=2:N
     L(l,:) = L(l,:) + rand(1,13)*0.5-0.25;
-    % rotate so the fixed-point y is at coordinate y=0
-    L(l,1) = norm(L(l,1:2));
-    L(l,2) = 0;
     % normalize to a radius of 1
     L(l,:) = L(l,:) / L(l,3); 
 end
@@ -126,9 +135,6 @@ for g=1:G
             end
         end
         linkage = linkage / linkage(3); % normalize to radius of 1
-        % rotate so point y is on x-axis:
-        linkage(1) = norm(linkage(1:2));
-        linkage(2) = 0;
         % reassign it
         L(l,:) = linkage;
     end
@@ -150,7 +156,7 @@ for g=1:G
 end
 
 if(~strcmp(savefile,''))
-    save(savefile, 'max_fits', 'min_fits', 'L_best');
+    save(['saves/' savefile], 'max_fits', 'min_fits', 'L_best');
 else
     plot_opt_results;
 end

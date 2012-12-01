@@ -15,14 +15,26 @@ L_best = zeros(G,13);
 
 savefile = input('enter save-file name: ', 's');
 seedfile = input('enter seed-file name (starting point): ', 's');
-if exist(seedfile, 'file')
-    load(seedfile);
-    linkage0 = L_best(end,:);
-elseif exist([seedfile '.mat'], 'file')
+seedfile = ['saves/' seedfile];
+if exist(seedfile, 'file') || exist([seedfile '.mat'], 'file')
     load(seedfile);
     linkage0 = L_best(end,:);
 else
-    linkage0 = [.5 0 .3 1.5 1.5 1.5 1.5 .5 1.5 1.25 .75 1 1.5];
+    % from jansen's website
+    linkage0 = [38, ... % a
+           -7.8, ... % l
+           15, ... % m
+           50, ... % j
+           61.9, ... % k
+           41.5, ... % b
+           55.8, ... % e
+           40.1, ... % d
+           39.3, ... % c
+           39.4, ... % f
+           36.7, ... % g
+           49, ... % i
+           65.7]; % h
+    linkage0 = linkage0 / linkage0(3);
 end
 
 L = linkage0;
@@ -83,5 +95,5 @@ for g=1:G
 end
 
 if(~strcmp(savefile,''))
-    save(savefile, 'L_best', 'max_fits');
+    save(['saves/' savefile], 'L_best', 'max_fits');
 end
