@@ -19,9 +19,6 @@ function [score stresses] = score_stress(tr)
     % 12 - (b,e)
     % 13 - (d,e)
     
-    % difference over drive-angle dimension
-    pt_diffs = diff(tr,1,3);
-    
     rod_pairs = [[1 3]; % x-p
                  [3 4]; % p-a
                  [3 5]; % p-b
@@ -34,6 +31,8 @@ function [score stresses] = score_stress(tr)
                  [5 8]; % b-e
                  [7 8]];% d-e
     
+	pt_diffs = diff(tr, 1, 3);
+             
     stresses = zeros(11,1);
     
 	n = size(tr, 3);

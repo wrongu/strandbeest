@@ -14,7 +14,7 @@ function score = score_trajectory(tr, n, verbose)
     end
     pts_e = extract_pt_from_tr(tr, 8);
     s_foot = score_foot_trajectory(pts_e);
-    s_stress = score_stress(tr);
+    s_stress = score_stress(tr) ^ 1;
     score = s_foot * s_stress;
     if verbose
         fprintf('s_foot = %f\ns_stress = %f\n', s_foot, s_stress);

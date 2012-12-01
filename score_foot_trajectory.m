@@ -38,9 +38,9 @@ function score = score_foot_trajectory(pts, show)
     end
     
     spikes = sum(abs(lo - mean(lo))) / length(lo);
-    flat_bottom_score = exp(-spikes);
+    flat_bottom_score = exp(-spikes/10); % div by 10 means closer to 0, meaning more sensitiv eto change.
     ydiff = max(hi)-mean([hi(end) hi(1)]);
-    height_score = 1 - exp(-ydiff);
+    height_score = 1 - exp(-ydiff * 4);
 
     if show
         fprintf('spikes = %f\n', spikes);
@@ -53,9 +53,10 @@ function score = score_foot_trajectory(pts, show)
     score_diff2 = exp(-spike_hi);
     
     walk_to_recover_score = 1 - exp(-(length(lo) / length(hi)));
+    wide_stance_score = 1 - exp(-(mean(x)));
     
-    score = score_diff2 * flat_bottom_score * height_score * ...
-                walk_to_recover_score;
+    score = flat_bottom_score ^ 8 * walk_to_recover_score * height_score; % score_diff2 * (flat_bottom_score ^ 4) * height_score * ...
+                % walk_to_recover_score * wide_stance_score;
     
     if hi(floor(end/2)) < hi(end) || hi(floor(end/2)) < hi(1)
         score = score*0.1;

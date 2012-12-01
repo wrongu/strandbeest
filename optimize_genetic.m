@@ -9,12 +9,11 @@ n = 128;
 
 savefile = input('enter save-file name: ', 's');
 seedfile = input('enter seed-file name (starting point): ', 's');
-seedfile = ['saves/' seedfile];
-if exist(seedfile, 'file') || exist([seedfile '.mat'], 'file')
-    load(seedfile);
+try
+    load(['saves/' seedfile]);
     linkage0 = L_best(end,:);
-else
-    % from jansen's website
+catch err
+     % from jansen's website
     linkage0 = [38, ... % a
            -7.8, ... % l
            15, ... % m
