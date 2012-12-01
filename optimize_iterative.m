@@ -43,7 +43,7 @@ for g=1:G
         L_shrink = L + shrink_factor(j,:);
         [~, tr_s] = simulate_rotation(L_shrink,0,2*pi,n);
         f_s = score_trajectory(tr_s,n);
-        % what happens if grow
+        % what happens if grown
         L_grow = L + grow_factor(j,:);
         [~, tr_g] = simulate_rotation(L_grow,0,2*pi,n);
         f_g = score_trajectory(tr_g,n);
@@ -61,6 +61,7 @@ for g=1:G
     max_fits(g) = f;
     
     if all(dL==0)
+        disp('no change. breaking.');
         break;
     end
     
