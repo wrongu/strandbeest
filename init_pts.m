@@ -19,16 +19,20 @@
 % 12 - (b,e)
 % 13 - (d,e)
 
-function [pts] = init_pts(linkage, start_a)
+function [pts] = init_pts(linkage, start_a, reverse)
+    if nargin < 3
+        reverse = 1;
+    end
     pts = zeros(8,2);
     r = linkage(3);
     y = linkage(1:2);
+    y(1) = y(1) * reverse;
     p = [r*cos(start_a), r*sin(start_a)];
-    a = solve_triangle(p, y, linkage(6), linkage(4), +1);
-    b = solve_triangle(p, y, linkage(9), linkage(5), -1);
-    c = solve_triangle(y, a, linkage(7), linkage(8), -1);
-    d = solve_triangle(b, c, linkage(10), linkage(11), -1);
-    e = solve_triangle(b, d, linkage(13), linkage(12), -1);
+    a = solve_triangle(p, y, linkage(6), linkage(4), +1*reverse);
+    b = solve_triangle(p, y, linkage(9), linkage(5), -1*reverse);
+    c = solve_triangle(y, a, linkage(7), linkage(8), -1*reverse);
+    d = solve_triangle(b, c, linkage(10), linkage(11), -1*reverse);
+    e = solve_triangle(b, d, linkage(13), linkage(12), -1*reverse);
     
     pts(2,:) = y;
     pts(3,:) = p;

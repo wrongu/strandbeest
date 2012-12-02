@@ -19,9 +19,12 @@
 % 13 - (d,e)
 
 
-function valid = verify_linkage(linkage, pts, tol)
+function valid = verify_linkage(linkage, pts, reverse, tol)
     if nargin < 3
-        tol = 0.00001;
+        reverse = 1;
+    end
+    if nargin < 4
+        tol = 0.001;
     end
     % get pts
     x = pts(1,:);
@@ -38,7 +41,7 @@ function valid = verify_linkage(linkage, pts, tol)
         % fprintf('x pt invalid\n');
         valid = false; return;
     end
-    if (~all(y == linkage(1:2)))
+    if (~all(y == [linkage(1)*reverse linkage(2)]))
         % fprintf('y pt invalid\n');
         valid = false; return;
     end

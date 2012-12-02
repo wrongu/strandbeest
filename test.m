@@ -54,4 +54,4 @@ fprintf('valid = %d\n', verify_linkage(linkage,pts));
 %% TEST SIMULATION
 
 % use linkage from above
-animate_linkage(linkage);
+animate_linkage(linkage, true);

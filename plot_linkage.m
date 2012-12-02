@@ -3,7 +3,7 @@
 % pts = 8x2 array with rows:
 %   x, y, p, a, b, c, d, e
 
-function h = plot_linkage(pts, add_markers, h)
+function h = plot_linkage(pts, add_markers, h, newfigure)
     if nargin < 2
         add_markers = true;
     end
@@ -18,7 +18,7 @@ function h = plot_linkage(pts, add_markers, h)
     e = pts(8,:);
     if nargin < 3
         h = figure();
-    else
+    elseif newfigure
         figure(h);
     end
     hold on;
@@ -54,7 +54,9 @@ function h = plot_linkage(pts, add_markers, h)
         text(d(1), d(2), 'd');
         text(e(1), e(2), 'e');
     end
-    hold off;
+    if nargin >= 4 && newfigure
+        hold off;
+    end
 end
 
 function addline(pt1, pt2)

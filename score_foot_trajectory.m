@@ -51,12 +51,13 @@ function score = score_foot_trajectory(pts, show)
     
     spike_hi = max(abs(diff(hi,2)));
     score_diff2 = exp(-spike_hi);
+    spike_x = max(abs(diff(x,2)));
+    score_xdiff2 = exp(-spike_x);
     
     walk_to_recover_score = 1 - exp(-(length(lo) / length(hi)));
     wide_stance_score = 1 - exp(-(mean(x)));
     
-    score = flat_bottom_score ^ 8 * walk_to_recover_score * height_score; % score_diff2 * (flat_bottom_score ^ 4) * height_score * ...
-                % walk_to_recover_score * wide_stance_score;
+    score = flat_bottom_score ^ 8 * walk_to_recover_score * height_score * wide_stance_score * score_diff2 * score_xdiff2;
     
     if hi(floor(end/2)) < hi(end) || hi(floor(end/2)) < hi(1)
         score = score*0.1;
